@@ -3,6 +3,8 @@ const HtmlWebpackPlugin = require('html-webpack-plugin')
 const TerserWebpackPlugin = require('terser-webpack-plugin')
 const MiniCssExtractPlugin = require('mini-css-extract-plugin')
 const VueLoaderPlugin = require('vue-loader/lib/plugin')
+const chalk = require('chalk')
+const ProgressBarPlugin = require('progress-bar-webpack-plugin')
 const resolveApp = require('./paths')
 
 module.exports = (isProduction) => {
@@ -111,7 +113,11 @@ module.exports = (isProduction) => {
         title: 'vue2-webpack5-anted',
         template: 'public/index.html'
       }),
-      new VueLoaderPlugin()
+      new VueLoaderPlugin(),
+      // 进度条 贴心的为进度百分比添加了加粗和绿色高亮态样式。
+      new ProgressBarPlugin({
+        format: `  :msg [:bar] ${chalk.green.bold(':percent')} (:elapsed s)`
+      })
     ],
     optimization: {
       runtimeChunk: true, // 模块抽取，利用浏览器缓存

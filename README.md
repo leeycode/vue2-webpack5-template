@@ -789,9 +789,79 @@ module.exports = (env) => {
 构建时减少繁琐修改配置文件的操作，在package.json内添加启动参数来选择不同环境配置
 
 
-### ant-design-vue
+
+
+
+### 打包速度优化
+优化效率工具
+安装以下 webpack 插件，帮助我们分析优化效率：
+
+1. progress-bar-webpack-plugin：查看编译进度；
+2. speed-measure-webpack-plugin：查看编译速度；
+3. webpack-bundle-analyzer：打包体积分析。
+
+#### 编译进度条
+一般来说，中型项目的首次编译时间为 5-20s，没个进度条等得多着急，通过 progress-bar-webpack-plugin 插件查看编译进度，方便我们掌握编译情况。
+
+```js
+npm i -D progress-bar-webpack-plugin
+```
+
+webpack.common.js 配置方式如下：
+```js
+const chalk = require('chalk')
+const ProgressBarPlugin = require('progress-bar-webpack-plugin')
+module.exports = {
+  plugins: [
+    // 进度条 贴心的为进度百分比添加了加粗和绿色高亮态样式。
+    new ProgressBarPlugin({
+        format: `  :msg [:bar] ${chalk.green.bold(':percent')} (:elapsed s)`
+      })
+  ],
+}
+```
+#### 编译速度分析
+
+优化 webpack 构建速度，首先需要知道是哪些插件、哪些 loader 耗时长，方便我们针对性的优化。
+```js
+npm i speed-measure-webpack-plugin -D
+```
+
+webpack.pro.js 配置方式如下：
+```js
+
+const SpeedMeasurePlugin = require("speed-measure-webpack-plugin");
+const smp = new SpeedMeasurePlugin();
+module.exports = smp.wrap({
+  // ...webpack config...
+})
+```
+#### 打包体积分析
+使用 webpack-bundle-analyzer 查看打包后生成的 bundle 体积分析，将 bundle 内容展示为一个便捷的、交互式、可缩放的树状图形式。帮助我们分析输出结果来检查模块在何处结束。
+
+```js
+npm i -D webpack-bundle-analyzer
+```
+webpack.prod.js 配置方式如下：
+```js
+
+const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
+module.exports = {
+  plugins: [
+    // 打包体积分析
+    new BundleAnalyzerPlugin()
+  ],
+}
+```
+
+
+
+### 第三方包优化
+
+#### ant-design-vue
 ```js
 npm i --save ant-design-vue@1.7.2
+npm i babel-plugin-import -D
 ```
 
 官方有对其配置按需加载功能，但是在实际使用用过程中，很多没有使用的组件还是被打包进了项目，主要集中在@ant-design/icons、moment上，占用了很大的体积。
@@ -810,7 +880,22 @@ plugins: [
   ]
 ```
 
+#### moment 
 
+moment的locale占了很大一部分，这也是我目前不需要用到的，所以我可以借用moment-locales-webpack-plugin插件移除moment中未用到的代码，先来安装它：
+```js
+npm i moment-locales-webpack-plugin -D
+```
+
+```js
+// webpack.common.js
+const MomentLocalesPlugin = require('moment-locales-webpack-plugin');
+
+module.exports = {
+  // ...
+  plugin: [new MomentLocalesPlugin()]
+}
+```
 ### 项目构建
 
 ```js

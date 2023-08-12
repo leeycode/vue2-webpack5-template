@@ -11,7 +11,6 @@ module.exports = {
       'import',
       { libraryName: 'ant-design-vue', libraryDirectory: 'es', style: 'css' },
       'ant-design-vue'
-    ],
-    'lodash'
+    ]
   ]
 }

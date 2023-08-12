@@ -789,6 +789,28 @@ module.exports = (env) => {
 构建时减少繁琐修改配置文件的操作，在package.json内添加启动参数来选择不同环境配置
 
 
+### ant-design-vue
+```js
+npm i --save ant-design-vue@1.7.2
+```
+
+官方有对其配置按需加载功能，但是在实际使用用过程中，很多没有使用的组件还是被打包进了项目，主要集中在@ant-design/icons、moment上，占用了很大的体积。
+
+babel.config.js中：
+```js
+plugins: [
+    <!--ant-design-vue按需加载配置-->
+    [
+      'import',
+      { libraryName: 'ant-design-vue', libraryDirectory: 'es', style: 'css' },
+      'ant-design-vue'
+    ],
+    <!--lodash按需加载配置-->
+    'lodash'
+  ]
+```
+
+
 ### 项目构建
 
 ```js
